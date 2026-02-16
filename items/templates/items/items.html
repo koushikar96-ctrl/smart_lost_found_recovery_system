@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lost & Found Items</title>
+    <style>
+    body {
+    font-family: 'Poppins', sans-serif;
+    background: url("{% static 'users/images/bg2.avif' %}") no-repeat center center fixed;
+    background-size: cover;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    color: #000000;
+}
+
+    h1 {
+        color: #000000; /* Adjust text color for better visibility */
+        margin-top: 40px;
+        text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+    }
+    h3 {
+        color: #000000;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 100px;
+        margin-top: 60px;
+    }
+    .option {
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .option:hover {
+        transform: scale(1.08);
+    }
+    .option img {
+        width: 250px;
+        height: 250px;
+        border-radius: 25px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        border: 3px solid #fff;
+    }
+    .form-container {
+        display: none;
+        margin-top: 50px;
+    }
+    form {
+        width: 60%;
+        margin: auto;
+        text-align: left;
+        background: rgba(255, 255, 255, 0.85); /* semi-transparent for bg */
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    form input, form textarea, form select {
+        width: 100%;
+        margin-bottom: 18px;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+    }
+    form button {
+        background: #1a3cd3;
+        color: #fff;
+        padding: 12px 22px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    form button:hover {
+        background: #7B1FA2;
+    }
+    .back-btn {
+        display: inline-block;
+        margin-top: 40px;
+        padding: 12px 22px;
+        font-size: 16px;
+        color: white;
+        background-color: #1a3cd3;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background 0.3s;
+    }
+    .back-btn:hover {
+        background-color: #1565C0;
+    }
+</style>
+
+</head>
+<body>
+<!-- Display messages -->
+{% if messages %}
+<div style="width:60%; margin:auto; margin-top:20px;">
+    {% for message in messages %}
+    <div style="padding:12px; border-radius:8px; margin-bottom:10px;
+                {% if message.tags == 'success' %} background-color:#4CAF50; color:white;
+                {% elif message.tags == 'error' %} background-color:#f44336; color:white;
+                {% elif message.tags == 'warning' %} background-color:#ff9800; color:white;
+                {% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+    <h1>Lost & Found Portal</h1>
+    <h3>Welcome, {{ username }} 👋</h3>
+
+    <div class="container">
+        <div class="option" onclick="showForm('lost')">
+            <img src="{% static 'users/images/lost1.jpg' %}" alt="Lost Item">
+        </div>
+        <div class="option" onclick="showForm('found')">
+            <img src="{% static 'users/images/found2.webp' %}" alt="Found Item">
+        </div>
+    </div>
+
+    <!-- Lost Item Form -->
+    <div id="lost-form" class="form-container">
+        <h2>Report a Lost Item</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="lost">
+            <label>Item Name:</label>
+            <input type="text" name="name" required>
+
+            <label>Category:</label>
+            <input type="text" name="category" required>
+
+            <label>Location:</label>
+            <input type="text" name="location" required>
+
+            <label>Description:</label>
+            <textarea name="description" rows="4"></textarea>
+
+            <button type="submit">Submit Lost Report</button>
+        </form>
+    </div>
+
+    <!-- Found Item Form -->
+    <div id="found-form" class="form-container">
+        <h2>Report a Found Item</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="found">
+            <label>Item Name:</label>
+            <input type="text" name="name" required>
+
+            <label>Category:</label>
+            <input type="text" name="category" required>
+
+            <label>Location:</label>
+            <input type="text" name="location" required>
+
+            <label>Description:</label>
+            <textarea name="description" rows="4"></textarea>
+
+            <button type="submit">Submit Found Report</button>
+        </form>
+    </div>
+
+    <a href="{% url 'users:dashboard' %}" class="back-btn">⬅ Back to Dashboard</a>
+
+    <script>
+        function showForm(type) {
+            document.getElementById("lost-form").style.display = "none";
+            document.getElementById("found-form").style.display = "none";
+            if (type === "lost") {
+                document.getElementById("lost-form").style.display = "block";
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } else {
+                document.getElementById("found-form").style.display = "block";
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }
+    </script>
+
+</body>
+</html>
