@@ -1,0 +1,13 @@
+<!-- templates/users/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to Dashboard, {{ username }} 👋</h1>
+    <a href="{% url 'users:user_dashboard' %}">Go to Detailed User Dashboard</a>
+    <a href="{% url 'users:logout_user' %}">Logout</a>
+</body>
+</html>
