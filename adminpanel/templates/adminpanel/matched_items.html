@@ -1,0 +1,127 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matched Items - Admin</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url("{% static 'users/images/bg3.jpeg' %}") no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            text-align: center;
+        }
+        h1 { margin-top: 40px; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
+        table {
+            width: 90%;
+            margin: 40px auto;
+            border-collapse: collapse;
+            background: rgba(0,0,0,0.6);
+            border-radius: 10px;
+        }
+        th, td { padding: 12px; border: 1px solid #fff; color: #fff; }
+        th { background-color: rgba(0, 123, 255, 0.7); }
+        .badge { padding: 5px 10px; border-radius: 5px; font-size: 14px; display: inline-block; }
+        .bg-warning { background: #ffc107; color: #000; }
+        .bg-success { background: #28a745; }
+        .bg-danger { background: #dc3545; }
+        .bg-primary { background: #007bff; }
+        .bg-info { background: #17a2b8; color: #000; }
+        .bg-secondary { background: #6c757d; }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 18px;
+            font-size: 16px;
+            color: white;
+            background-color: #f44336;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+        .back-btn:hover { background-color: #d32f2f; }
+
+        .update-btn {
+            margin-top: 5px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            background: #28a745;
+            color: #fff;
+            cursor: pointer;
+        }
+        .update-btn:hover { background: #218838; }
+
+        .radio-group { display: flex; justify-content: center; gap: 10px; }
+    </style>
+</head>
+<body>
+
+<h1>Matched Items</h1>
+
+<table>
+    <tr>
+        <th>#</th>
+        <th>Lost Item</th>
+        <th>Found Item</th>
+        <th>Category</th>
+        <th>Location</th>
+        <th>Lost Reported By</th>
+        <th>Found Reported By</th>
+        <th>Score</th>
+        <th>Status</th>
+        <th>Update Status</th>
+    </tr>
+
+    {% for item in matched_items %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ item.lost_name }}</td>
+        <td>{{ item.found_name }}</td>
+        <td>{% with lost=lost_items|get_item:item.lost_id %}{{ lost.category }}{% endwith %}</td>
+        <td>{% with found=found_items|get_item:item.found_id %}{{ found.location }}{% endwith %}</td>
+        <td>{{ item.lost_user }}</td>
+        <td>{{ item.found_user }}</td>
+        <td><span class="badge bg-info">{{ item.score }}</span></td>
+        <td>
+            {% if item.status == "Pending" %}
+                <span class="badge bg-warning">{{ item.status }}</span>
+            {% elif item.status == "Correct" %}
+                <span class="badge bg-success">{{ item.status }}</span>
+            {% elif item.status == "Wrong" %}
+                <span class="badge bg-danger">{{ item.status }}</span>
+            {% elif item.status == "Handover" %}
+                <span class="badge bg-primary">{{ item.status }}</span>
+            {% else %}
+                <span class="badge bg-secondary">{{ item.status }}</span>
+            {% endif %}
+        </td>
+        <td>
+            <form method="POST" action="{% url 'adminpanel:match_action_form' item.id %}">
+                {% csrf_token %}
+                <div class="radio-group">
+                    <label><input type="radio" name="status" value="Correct" {% if item.status == "Correct" %}checked{% endif %}> Correct</label>
+                    <label><input type="radio" name="status" value="Wrong" {% if item.status == "Wrong" %}checked{% endif %}> Wrong</label>
+                    <label><input type="radio" name="status" value="Handover" {% if item.status == "Handover" %}checked{% endif %}> Handover</label>
+                </div>
+                <button type="submit" class="update-btn">Update Status</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'adminpanel:dashboard' %}" class="back-btn">Back to Dashboard</a>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+</body>
+</html>
